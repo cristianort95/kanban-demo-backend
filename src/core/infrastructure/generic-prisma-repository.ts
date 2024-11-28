@@ -1,6 +1,7 @@
 import {Prisma, PrismaClient} from '@prisma/client'
 import {ResponseRequest} from "../domain/response-request";
 import {GenericPrisma} from "../domain/generic-prisma-repository";
+import {TransactionOrm} from "../domain/transaction-orm";
 
 const prisma = new PrismaClient({
     omit: {
@@ -16,6 +17,28 @@ export class GenericPrismaRepository implements GenericPrisma {
         try {
             const dataResponse = await ((prisma as any)[modelName]).create({data});
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
+        } catch (e: any) {
+            console.error('GenericPrismaRepository -> create', e.message)
+            return this.getError(e)
+        }
+    }
+
+    async createTransaction (transactionsOrm: TransactionOrm[]): Promise<ResponseRequest> {
+        try {
+            const transactionsResult = await prisma.$transaction(async (prisma) => {
+                const lotTransactions: any[] = [];
+
+                for (const transaction of transactionsOrm) {
+                    if (transaction.refField)
+                        for (const field of transaction.refField) {
+                            transaction.data[field.field] = lotTransactions[field.value].id
+                        }
+                    lotTransactions.push(await ((prisma as any)[transaction.modelName]).create({data: transaction.data}))
+                }
+                return lotTransactions;
+            });
+
+            return { statusCode: 200, data: transactionsResult, status:true, message:'' }
         } catch (e: any) {
             console.error('GenericPrismaRepository -> create', e.message)
             return this.getError(e)

@@ -6,6 +6,10 @@ export class GenericController {
     models = [
         {model: 'user', path: '/users'},
         {model: 'user', path: '/auth'},
+        {model: 'project', path: '/projects'},
+        {model: 'role', path: '/roles'},
+        {model: 'task', path: '/tasks'},
+        {model: 'comment', path: '/comments'}
     ]
 
     constructor(readonly service: GenericPrismaService) {}
@@ -80,7 +84,7 @@ export class GenericController {
         );
     }
 
-    protected getModel = (path: String):String => {
+    protected getModel = (path: String): String => {
         const model = this.models.find(i => path.includes(i.path));
         if (model) return model.model;
         else return 'notModel'

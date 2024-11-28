@@ -16,7 +16,7 @@ export class AuthController extends GenericController {
                 if (match && body.email === user.data.email) {
                     delete user.data.password;
                     const payload = {
-                        ...user.data, routes: user.data?.role ?? null,
+                        ...user.data, userAgent: req.headers["user-agent"], ipAddress: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
                     }
                     const token = jwt.sign(payload, secretKey, { expiresIn: '8h' });
 

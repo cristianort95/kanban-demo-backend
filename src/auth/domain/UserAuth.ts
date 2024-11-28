@@ -3,4 +3,6 @@ export interface UserAuth {
     name: string;
     lastname: string;
     email: string;
+    userAgent: string;
+    ipAddress: string;
 }

@@ -1,6 +1,8 @@
 import {ResponseRequest} from "./response-request";
+import {TransactionOrm} from "./transaction-orm";
 
 export interface GenericPrisma {
+    createTransaction (transactionsOrm: TransactionOrm[]): Promise<ResponseRequest>
     create (data: any, modelName: String): Promise<ResponseRequest>;
     update (where: object, data: object, modelName: String): Promise<ResponseRequest>;
     delete (where: object, modelName: String): Promise<ResponseRequest>;

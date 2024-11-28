@@ -15,7 +15,6 @@ export class UserController extends GenericController {
         const body = req.body;
         try {
             body.password = await this.passwordSvc.validateAndHash(body.password);
-            console.log("body.password", body.password)
             const response = await this.service.create(body, "user")
             res.setHeader(
                 'Content-Type', 'application/json'

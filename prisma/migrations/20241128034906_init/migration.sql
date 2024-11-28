@@ -1,0 +1,5 @@
+-- DropForeignKey
+ALTER TABLE "ROLE" DROP CONSTRAINT "ROLE_project_id_fkey";
+
+-- AddForeignKey
+ALTER TABLE "ROLE" ADD CONSTRAINT "ROLE_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "PROJECT"("id") ON DELETE CASCADE ON UPDATE CASCADE;
