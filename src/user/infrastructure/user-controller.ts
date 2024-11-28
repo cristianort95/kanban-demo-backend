@@ -19,7 +19,7 @@ export class UserController extends GenericController {
             const response = await this.service.create(body, "user")
             res.setHeader(
                 'Content-Type', 'application/json'
-            ).status(response.statusCode).send({ msg: response.message});
+            ).status(response.statusCode).send({...response});
         } catch (err) {
             console.error('Error al registrar usuario:', err);
         }

@@ -17,16 +17,8 @@ export class GenericPrismaRepository implements GenericPrisma {
             const dataResponse = await ((prisma as any)[modelName]).create({data});
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
-            if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                console.info('ERORR', e.message)
-                return { message: e.message, status:false, statusCode: 400 }
-            } else if(e instanceof Prisma.PrismaClientValidationError) {
-                console.info('ERORR', e.message)
-                return { message: e.name, status:false, statusCode: 400 }
-            } else {
-                console.info('ERORR', e.toString())
-                return { message: e.toString(), status:false, statusCode: 400 }
-            }
+            console.error('GenericPrismaRepository -> create', e.message)
+            return this.getError(e)
         }
     }
 
@@ -35,14 +27,8 @@ export class GenericPrismaRepository implements GenericPrisma {
             const dataResponse = await ((prisma as any)[modelName]).update({where, data,});
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
-            if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                console.info(e.message)
-                return { message: e.message, status:false, statusCode: 400 }
-            } else {
-                console.info('ERORR', e.toString())
-
-                return { message: e.toString(), status:false, statusCode: 400 }
-            }
+            console.error('GenericPrismaRepository -> update', e.message)
+            return this.getError(e)
         }
     }
 
@@ -51,14 +37,8 @@ export class GenericPrismaRepository implements GenericPrisma {
             const dataResponse = await ((prisma as any)[modelName]).delete({where});
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
-            if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                console.info(e.message)
-                return { message: e.message, status:false, statusCode: 400 }
-            } else {
-                console.info('ERORR', e.toString())
-
-                return { message: e.toString(), status:false, statusCode: 400 }
-            }
+            console.error('GenericPrismaRepository -> delete', e.message)
+            return this.getError(e)
         }
     }
 
@@ -67,14 +47,8 @@ export class GenericPrismaRepository implements GenericPrisma {
             const dataResponse = await ((prisma as any)[modelName]).findUniqueOrThrow({where, omit, include});
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
-            if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                console.info(e.message)
-                return { message: e.message, status:false, statusCode: 400 }
-            } else {
-                console.info('ERORR', e.toString())
-
-                return { message: e.toString(), status:false, statusCode: 400 }
-            }
+            console.error('GenericPrismaRepository -> get', e.message)
+            return this.getError(e)
         }
     }
 
@@ -83,15 +57,16 @@ export class GenericPrismaRepository implements GenericPrisma {
             const dataResponse = await ((prisma as any)[modelName]).findMany({where, skip, take, include });
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
-            if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                console.info(e.message)
-                return { message: e.message, status:false, statusCode: 400 }
-            } else {
-                console.info('ERORR', e.toString())
-
-                return { message: e.toString(), status:false, statusCode: 400 }
-            }
+            console.error('GenericPrismaRepository -> getAll', e.message)
+            return this.getError(e)
         }
     }
 
+    private getError = (e: any): ResponseRequest  => {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            return { errors: [{code: e.code, msg: e.meta}], status:false, statusCode: 400 }
+        } else if(e instanceof Prisma.PrismaClientValidationError) {
+            return { errors: [{code: "P00VALID", msg: e.message}], status:false, statusCode: 400 }
+        } return { message: e.toString(), status:false, statusCode: 400 }
+    }
 }
