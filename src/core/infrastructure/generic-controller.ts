@@ -6,9 +6,6 @@ export class GenericController {
     models = [
         {model: 'user', path: '/users'},
         {model: 'user', path: '/auth'},
-        {model: 'organization', path: '/association'},
-        {model: 'lot', path: '/plots'},
-        {model: 'inspection', path: '/inspection'},
     ]
 
     constructor(readonly service: GenericPrismaService) {}

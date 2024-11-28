@@ -14,7 +14,8 @@ export class UserController extends GenericController {
     async post(req: Request, res: Response, _next: NextFunction) {
         const body = req.body;
         try {
-            body.password = this.passwordSvc.validateAndHash(body.password);
+            body.password = await this.passwordSvc.validateAndHash(body.password);
+            console.log("body.password", body.password)
             const response = await this.service.create(body, "user")
             res.setHeader(
                 'Content-Type', 'application/json'
@@ -29,7 +30,7 @@ export class UserController extends GenericController {
         const model: string = String(this.getModel(req.originalUrl));
 
         if (req.body.password)
-            req.body.password = this.passwordSvc.validateAndHash(req.body.password);
+            req.body.password = await this.passwordSvc.validateAndHash(req.body.password);
 
         const response = await this.service.update({id: req.userAuth?.id}, req.body, model)
 

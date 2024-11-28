@@ -1,0 +1,76 @@
+-- CreateTable
+CREATE TABLE "USERS" (
+    "id" SERIAL NOT NULL,
+    "email" VARCHAR(50) NOT NULL,
+    "password" VARCHAR(60) NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
+    "last_name" VARCHAR(50) NOT NULL,
+    "phone" VARCHAR(15) NOT NULL,
+
+    CONSTRAINT "USERS_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PROJECT" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "PROJECT_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ROLE" (
+    "id" SERIAL NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "project_id" INTEGER NOT NULL,
+    "role" VARCHAR(50) NOT NULL,
+
+    CONSTRAINT "ROLE_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TASK" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
+    "description" TEXT NOT NULL,
+    "status" VARCHAR(50) NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "project_id" INTEGER NOT NULL,
+
+    CONSTRAINT "TASK_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "COMMENT" (
+    "id" SERIAL NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "task_id" INTEGER NOT NULL,
+    "comment" TEXT NOT NULL,
+
+    CONSTRAINT "COMMENT_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "USERS_email_key" ON "USERS"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "USERS_password_key" ON "USERS"("password");
+
+-- AddForeignKey
+ALTER TABLE "ROLE" ADD CONSTRAINT "ROLE_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "USERS"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ROLE" ADD CONSTRAINT "ROLE_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "PROJECT"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TASK" ADD CONSTRAINT "TASK_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "USERS"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TASK" ADD CONSTRAINT "TASK_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "PROJECT"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "COMMENT" ADD CONSTRAINT "COMMENT_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "USERS"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "COMMENT" ADD CONSTRAINT "COMMENT_task_id_fkey" FOREIGN KEY ("task_id") REFERENCES "TASK"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
