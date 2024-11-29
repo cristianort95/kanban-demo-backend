@@ -1,5 +1,5 @@
 
-import {UserAuth} from "../../auth/domain/UserAuth";
+import {UserAuth} from "../../auth/domain/user-auth";
 import {ResponseRequest} from "../../core/domain/response-request";
 import {GenericPrismaService} from "../../core/application/generic-prisma-service";
 import {TransactionOrm} from "../../core/domain/transaction-orm";

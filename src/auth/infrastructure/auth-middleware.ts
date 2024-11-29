@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import jwt from "jsonwebtoken";
-import {UserAuth} from "../domain/UserAuth";
+import {UserAuth} from "../domain/user-auth";
 
 
 export class AuthMiddleware {

@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {GenericController} from "../../core/infrastructure/generic-controller";
 import {GenericPrismaService} from "../../core/application/generic-prisma-service";
-import {PasswordValidationService} from "../application/PasswordValidationService";
+import {PasswordValidationService} from "../application/password-validationService";
 
 
 export class UserController extends GenericController {
