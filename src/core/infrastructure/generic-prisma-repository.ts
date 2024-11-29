@@ -75,6 +75,16 @@ export class GenericPrismaRepository implements GenericPrisma {
         }
     }
 
+    async getFirst(where: object, modelName: string, omit?: object, include?: any): Promise<ResponseRequest> {
+        try {
+            const dataResponse = await ((prisma as any)[modelName]).findFirstOrThrow({where, omit, include});
+            return { statusCode: 200, data: dataResponse, status:true, message:'' }
+        } catch (e: any) {
+            console.error('GenericPrismaRepository -> get', e.message)
+            return this.getError(e)
+        }
+    }
+
     async getAll (skip: number, take: number, include: any, modelName: string, where?: object): Promise<ResponseRequest> {
         try {
             const dataResponse = await ((prisma as any)[modelName]).findMany({where, skip, take, include });
