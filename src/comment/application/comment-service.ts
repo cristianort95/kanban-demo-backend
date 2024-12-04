@@ -31,7 +31,6 @@ export class CommentService {
     }
 
     async getAll(skip: number, take: number, relationsFields: any, where?: object): Promise<ResponseRequest> {
-        console.log("where", where);
         return await this.orm.getAll(skip, take, relationsFields, "comment", where);
     }
 

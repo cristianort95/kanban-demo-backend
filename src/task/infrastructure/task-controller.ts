@@ -8,9 +8,8 @@ export class TaskController {
     async post(req: Request, res: Response, _next: NextFunction) {
         const body = req.body;
         try {
-            body.userId = req.userAuth!.id;
             body.projectId = Number(req.params.projectId ?? 0);
-            const response = await this.service.create(body)
+            const response = await this.service.create(body, req.userAuth!.email)
             res.setHeader(
                 'Content-Type', 'application/json'
             ).status(response.statusCode).send({...response});
@@ -24,7 +23,7 @@ export class TaskController {
         const response = await this.service.update(
             Number(req.params.id ?? 0),
             body,
-            Number(req.userAuth!.id),
+            req.userAuth!.email,
             Number(req.params.projectId ?? 0)
         )
         res.setHeader(
@@ -76,7 +75,7 @@ export class TaskController {
         const id = Number(req.params.id ?? 1);
         const response = await this.service.delete(
             id,
-            Number(req.userAuth!.id),
+            req.userAuth!.email,
             projectId)
         res.setHeader(
             'Content-Type', 'application/json'

@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {GenericController} from "../../core/infrastructure/generic-controller";
 import {GenericPrismaService} from "../../core/application/generic-prisma-service";
 import {PasswordValidationService} from "../application/password-validationService";
+import {ResponseRequest} from "../../core/domain/response-request";
 
 
 export class UserController extends GenericController {
@@ -19,8 +20,12 @@ export class UserController extends GenericController {
             res.setHeader(
                 'Content-Type', 'application/json'
             ).status(response.statusCode).send({...response});
-        } catch (err) {
+        } catch (err: any) {
+            const response: ResponseRequest = {statusCode: 400, status:false, message: err.toString()};
             console.error('Error al registrar usuario:', err);
+            res.setHeader(
+                'Content-Type', 'application/json'
+            ).status(response.statusCode).send({...response});
         }
     }
 

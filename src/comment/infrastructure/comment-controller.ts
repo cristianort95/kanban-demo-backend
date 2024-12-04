@@ -8,7 +8,7 @@ export class CommentController {
     async post(req: Request, res: Response, _next: NextFunction) {
         const body = req.body;
         try {
-            body.userId = req.userAuth!.id;
+            body.userId = req.userAuth!.email;
             body.projectId = Number(req.params.projectId ?? 0);
             body.taskId = Number(req.params.taskId ?? 1);
             const response = await this.service.create(body)

@@ -9,7 +9,7 @@ export class ProjectService extends GenericPrismaService{
     async createProject(name: string, description: string, role: string, user: UserAuth): Promise<ResponseRequest> {
         const transaction: TransactionOrm[] = [
             {modelName: "project", data: {name, description}},
-            {modelName: "role", data: {userId: user.id, role}, refField: [{field: "projectId", value: 0}]}
+            {modelName: "role", data: {userId: user.email, role}, refField: [{field: "projectId", value: 0}]}
         ]
         return await this.orm.createTransaction(transaction);
     }
@@ -17,7 +17,7 @@ export class ProjectService extends GenericPrismaService{
     async deleteProject (where: any): Promise<ResponseRequest> {
         const role = await this.orm.get(where, "role" as string, undefined, undefined);
         if (role.status)
-            return await this.orm.delete({id: role.data.id}, "project" as string);
+            return await this.orm.delete({id: role.data.projectId}, "project" as string);
         else
             return role
     }
@@ -26,7 +26,7 @@ export class ProjectService extends GenericPrismaService{
         const role = await this.orm.get(where, "role" as string, undefined, undefined);
         if (role.status)
             return await this.orm.update(
-                {id: role.data.id},
+                {id: role.data.projectId},
                 {name: data.name, description: data.description},
                 "project"
             );

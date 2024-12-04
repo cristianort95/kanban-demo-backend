@@ -14,7 +14,7 @@ export class TeamController extends GenericController {
         body.projectId = projectId;
         try {
             const response = await this.service.addMember(
-                Number(req.userAuth!.id),
+                req.userAuth!.email,
                 projectId,
                 body,
             )
@@ -31,7 +31,7 @@ export class TeamController extends GenericController {
         const projectId = Number(req.params.projectId);
         const id = Number(req.params.id);
         const response = await this.service.updateTeam(
-            Number(req.userAuth!.id),
+            req.userAuth!.email,
             projectId,
             id,
             req.body.role,
@@ -75,7 +75,11 @@ export class TeamController extends GenericController {
                 } else include[relation] = true
             }
         });
-        const response = await this.service.getAll(limit * (page - 1), limit, include, 'role', {projectId})
+        const response = await this.service.getAll(limit * (page - 1), limit, include, 'role', {
+            projectId, NOT: {
+                role: "admin"
+            }
+        })
         res.setHeader(
             'Content-Type', 'application/json'
         ).status(response.statusCode).send(
@@ -87,7 +91,7 @@ export class TeamController extends GenericController {
         const projectId = Number(req.params.projectId);
         const id = Number(req.params.id);
         const response = await this.service.deleteTeam(
-            Number(req.userAuth!.id),
+            req.userAuth!.email,
             projectId,
             id
         )

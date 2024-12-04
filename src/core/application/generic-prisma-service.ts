@@ -21,7 +21,7 @@ export class GenericPrismaService {
         return await this.orm.get(where, modelName as string, omit, relationsFields);
     }
 
-    async getAll (skip: number, take: number, relationsFields: any, modelName: String, where?: object): Promise<ResponseRequest> {
+    async getAll(skip: number, take: number, relationsFields: any, modelName: String, where?: object): Promise<ResponseRequest> {
         return await this.orm.getAll(skip, take, relationsFields, modelName as string, where);
     }
 }

@@ -15,8 +15,7 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique @db.VarChar(50)
+  email    String    @id @unique @db.VarChar(50)
   password String    @unique @db.VarChar(60)
   name     String    @db.VarChar(50)
   lastName String    @map("last_name") @db.VarChar(50)
@@ -41,8 +40,8 @@ model Project {
 
 model Role {
   id        Int     @id @default(autoincrement())
-  user      User    @relation("AllRoleUser", fields: [userId], references: [id])
-  userId    Int     @map("user_id")
+  user      User    @relation("AllRoleUser", fields: [userId], references: [email])
+  userId    String  @map("user_id")
   project   Project @relation("AllRoleProject", fields: [projectId], references: [id], onDelete: Cascade)
   projectId Int     @map("project_id")
   role      String  @db.VarChar(50)
@@ -55,8 +54,8 @@ model Task {
   name        String    @db.VarChar(50)
   description String    @db.Text
   status      String    @db.VarChar(50)
-  user        User      @relation("AllTaskUser", fields: [userId], references: [id])
-  userId      Int       @map("user_id")
+  user        User      @relation("AllTaskUser", fields: [userId], references: [email])
+  userId      String    @map("user_id")
   project     Project   @relation("AllTaskProject", fields: [projectId], references: [id], onDelete: Cascade)
   projectId   Int       @map("project_id")
   comment     Comment[] @relation("AllCommentTask")
@@ -66,8 +65,8 @@ model Task {
 
 model Comment {
   id        Int     @id @default(autoincrement())
-  user      User    @relation("AllCommentUser", fields: [userId], references: [id])
-  userId    Int     @map("user_id")
+  user      User    @relation("AllCommentUser", fields: [userId], references: [email])
+  userId    String  @map("user_id")
   task      Task    @relation("AllCommentTask", fields: [taskId], references: [id])
   taskId    Int     @map("task_id")
   project   Project @relation("AllCommentProject", fields: [projectId], references: [id], onDelete: Cascade)

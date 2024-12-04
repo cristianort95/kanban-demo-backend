@@ -28,7 +28,7 @@ export class ProjectController extends GenericController {
 
     async patch(req: Request, res: Response, _next: NextFunction) {
         const id = Number(req.params.id);
-        const response = await this.service.updateProject({id, userId: req.userAuth?.id, role: "admin"}, req.body)
+        const response = await this.service.updateProject({id, userId: req.userAuth?.email, role: "admin"}, req.body)
         res.setHeader(
             'Content-Type', 'application/json'
         ).status(response.statusCode).send(
@@ -41,7 +41,7 @@ export class ProjectController extends GenericController {
         const include = {
             project: { select: { name: true, description: true }},
         }
-        const response = await this.service.get({id, userId: req.userAuth?.id, role: "admin"}, "role", undefined, include)
+        const response = await this.service.get({id, userId: req.userAuth?.email, role: "admin"}, "role", undefined, include)
         res.setHeader(
             'Content-Type', 'application/json'
         ).status(response.statusCode).send(
@@ -66,7 +66,7 @@ export class ProjectController extends GenericController {
                 } else include[relation] = true
             }
         });
-        const response = await this.service.getAll(limit * (page - 1), limit, include, 'role', {userId: req.userAuth?.id, role: "admin"})
+        const response = await this.service.getAll(limit * (page - 1), limit, include, 'role', {userId: req.userAuth?.email})
         res.setHeader(
             'Content-Type', 'application/json'
         ).status(response.statusCode).send(
@@ -76,7 +76,7 @@ export class ProjectController extends GenericController {
 
     async delete(req: Request, res: Response, _next: NextFunction) {
         const id = Number(req.params.id);
-        const response = await this.service.deleteProject({id, userId: req.userAuth?.id, role: "admin"})
+        const response = await this.service.deleteProject({id, userId: req.userAuth?.email, role: "admin"})
         res.setHeader(
             'Content-Type', 'application/json'
         ).status(response.statusCode).send(
