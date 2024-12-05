@@ -17,7 +17,7 @@ export class CommentService {
             return role
     }
 
-    async update (id: number, data: any, userId: number, projectId: number, taskId: number): Promise<ResponseRequest> {
+    async update (id: number, data: any, userId: string, projectId: number, taskId: number): Promise<ResponseRequest> {
         delete data.userId;
         const role = await this.orm.getFirst({userId, projectId}, "role", undefined, undefined);
         if (role.status)
@@ -34,7 +34,7 @@ export class CommentService {
         return await this.orm.getAll(skip, take, relationsFields, "comment", where);
     }
 
-    async delete (id: number, userId: number, projectId: number, taskId: number): Promise<ResponseRequest> {
+    async delete (id: number, userId: string, projectId: number, taskId: number): Promise<ResponseRequest> {
         const role = await this.orm.getFirst({userId, projectId}, "role", undefined, undefined);
         if (role.status)
             return await this.orm.delete({id, projectId, taskId}, "comment");

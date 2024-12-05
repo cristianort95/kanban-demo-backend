@@ -25,7 +25,7 @@ export class CommentController {
         const response = await this.service.update(
             Number(req.params.id ?? 0),
             body,
-            Number(req.userAuth!.id),
+            req.userAuth!.email,
             Number(req.params.projectId ?? 0),
             Number(req.params.taskId ?? 0)
         )
@@ -81,7 +81,7 @@ export class CommentController {
         const id = Number(req.params.id ?? 1);
         const response = await this.service.delete(
             id,
-            Number(req.userAuth!.id),
+            req.userAuth!.email,
             projectId,
             taskId
         )
