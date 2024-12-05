@@ -2,9 +2,9 @@ import {Prisma, PrismaClient} from '@prisma/client'
 import {ResponseRequest} from "../domain/response-request";
 import {GenericPrisma} from "../domain/generic-prisma-repository";
 import {TransactionOrm} from "../domain/transaction-orm";
-import {Resend} from "resend";
 import fs from "fs";
 import path from "path";
+import nodemailer from "nodemailer";
 
 const loadEmailTemplate = (filePath: any) => {
     return fs.readFileSync(filePath, { encoding: 'utf-8' });
@@ -19,8 +19,15 @@ const prisma = new PrismaClient({
 })
 
 const templatePath = path.join(__dirname, '../../assets/body-email.html');
-
 const emailTemplate = loadEmailTemplate(templatePath);
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.GMAIL_EMAIL,
+        pass: process.env.GMAIL_PASS,
+    },
+});
 
 export class GenericPrismaRepository implements GenericPrisma {
 
@@ -136,13 +143,12 @@ export class GenericPrismaRepository implements GenericPrisma {
             body = {to: data.userId, subject: `${_action} / ${model.toUpperCase()} / ${data.userId}`, html}
         }
         if (body) {
-            const resend = new Resend(process.env.EMAIL_KEY_RESEND);
-            return resend.emails.send({
-                from: 'onboarding@resend.dev',
-                to: "paco.ortizdiaz23@gmail.com",
+            return transporter.sendMail({
+                from: process.env.GMAIL_EMAIL,
+                to: body.to,
                 subject: body.subject,
                 html: body.html,
-            }).then();
+            })
         }
         return () => {};
     }
