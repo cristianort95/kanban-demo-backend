@@ -23,7 +23,7 @@ export class TaskService {
     }
 
     async get(id: number, projectId: number): Promise<ResponseRequest> {
-        return await this.orm.get({id, projectId}, "task");
+        return await this.orm.get({id, projectId}, "task", undefined, {comment: true});
     }
 
     async getAll(skip: number, take: number, relationsFields: any, where?: object): Promise<ResponseRequest> {
