@@ -2,6 +2,13 @@ import {Prisma, PrismaClient} from '@prisma/client'
 import {ResponseRequest} from "../domain/response-request";
 import {GenericPrisma} from "../domain/generic-prisma-repository";
 import {TransactionOrm} from "../domain/transaction-orm";
+import {Resend} from "resend";
+import fs from "fs";
+import path from "path";
+
+const loadEmailTemplate = (filePath: any) => {
+    return fs.readFileSync(filePath, { encoding: 'utf-8' });
+};
 
 const prisma = new PrismaClient({
     omit: {
@@ -11,11 +18,16 @@ const prisma = new PrismaClient({
     }
 })
 
+const templatePath = path.join(__dirname, '../../assets/body-email.html');
+
+const emailTemplate = loadEmailTemplate(templatePath);
+
 export class GenericPrismaRepository implements GenericPrisma {
 
     async create (data: any, modelName: string): Promise<ResponseRequest> {
         try {
             const dataResponse = await ((prisma as any)[modelName]).create({data});
+            await this.sendEmail(dataResponse, modelName, "CREATE")
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
             console.error('GenericPrismaRepository -> create', e.message)
@@ -48,6 +60,7 @@ export class GenericPrismaRepository implements GenericPrisma {
     async update (where: object, data: object, modelName: string): Promise<ResponseRequest> {
         try {
             const dataResponse = await ((prisma as any)[modelName]).update({where, data,});
+            await this.sendEmail(dataResponse, modelName, "UPDATE")
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
             console.error('GenericPrismaRepository -> update', e.message)
@@ -58,6 +71,7 @@ export class GenericPrismaRepository implements GenericPrisma {
     async delete (where: object, modelName: string): Promise<ResponseRequest> {
         try {
             const dataResponse = await ((prisma as any)[modelName]).delete({where});
+            await this.sendEmail(dataResponse, modelName, "DELETE")
             return { statusCode: 200, data: dataResponse, status:true, message:'' }
         } catch (e: any) {
             console.error('GenericPrismaRepository -> delete', e.message)
@@ -101,5 +115,35 @@ export class GenericPrismaRepository implements GenericPrisma {
         } else if(e instanceof Prisma.PrismaClientValidationError) {
             return { errors: [{code: "P00VALID", msg: e.message}], status:false, statusCode: 400 }
         } return { message: e.toString(), status:false, statusCode: 400 }
+    }
+
+    private async sendEmail(data: any, model: string, _action: string) {
+        let body: {to: string, subject: string, html: string} | undefined = undefined;
+        if ((model==="task" && data.userId) || (model==="comment" && data.userId)) {
+            const html = emailTemplate
+                .replace("{{{{{TITLE}}}}}", data.name)
+                .replace("{{{{{PROJECT}}}}}", `Proyecto: ${model.toUpperCase()} / ${data.id}`)
+                .replace("{{{{{BODY}}}}}", `${_action} / ${model.toUpperCase()} / ${data.id}`)
+                .replace("{{{{{LINK}}}}}", `${process.env.DOMAIN_FRONT}/project/${data.projectId}`)
+            body = {to: data.userId, subject: `${_action} / ${model.toUpperCase()} / ${data.id}`, html}
+        }
+        if (model==="role" && data.userId) {
+            const html = emailTemplate
+                .replace("{{{{{TITLE}}}}}", `ROL: ${data.role}`)
+                .replace("{{{{{PROJECT}}}}}", `ROL: ${model.toUpperCase()} / ${data.userId}`)
+                .replace("{{{{{BODY}}}}}", `${_action} / ${model.toUpperCase()} / ${data.userId}`)
+                .replace("{{{{{LINK}}}}}", `${process.env.DOMAIN_FRONT}/project/${data.projectId}`)
+            body = {to: data.userId, subject: `${_action} / ${model.toUpperCase()} / ${data.userId}`, html}
+        }
+        if (body) {
+            const resend = new Resend(process.env.EMAIL_KEY_RESEND);
+            return resend.emails.send({
+                from: 'onboarding@resend.dev',
+                to: "paco.ortizdiaz23@gmail.com",
+                subject: body.subject,
+                html: body.html,
+            }).then();
+        }
+        return () => {};
     }
 }
