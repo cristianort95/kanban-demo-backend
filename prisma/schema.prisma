@@ -54,6 +54,7 @@ model Task {
   name        String    @db.VarChar(50)
   description String    @db.Text
   status      String    @db.VarChar(50)
+  endDate     DateTime? @map("end_date") @db.Timestamp()
   user        User?     @relation("AllTaskUser", fields: [userId], references: [email], onDelete: SetNull)
   userId      String?   @map("user_id")
   project     Project   @relation("AllTaskProject", fields: [projectId], references: [id], onDelete: Cascade)
